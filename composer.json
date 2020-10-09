@@ -1,0 +1,11 @@
+{
+    "name": "ridouchire/pissykaka",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "ridouchire",
+            "email": "ridouchire@gmail.com"
+        }
+    ],
+    "require": {}
+}
