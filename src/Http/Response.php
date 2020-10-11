@@ -29,6 +29,7 @@ class Response
         $body = [
             'payload' => $this->data,
             'version' => self::API_VERSION,
+            'error'   => null
         ];
 
         if ($this->error) {
