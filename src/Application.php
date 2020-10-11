@@ -10,8 +10,8 @@ class Application extends Container
 
     public function __construct(array $config)
     {
-        $this->app = $this;
-        $this->app['config'] = $config;
+        self::$app = $this;
+        self::$app['config'] = $config;
         self::$app = $this;
     }
 
