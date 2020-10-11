@@ -78,7 +78,7 @@ $app['router']->addRoute('GET', '/board', function (Request $req) {
 
     $board_data = Application::$app['db']->get('boards', '*', ['name' => (string) $req->getParams()['name']]);
     $board_data['threads'] = Application::$app['db']->select(
-        'threads',
+        'posts',
         '*',
         [
             'AND' => [
