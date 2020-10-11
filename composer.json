@@ -7,5 +7,16 @@
             "email": "ridouchire@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "pimple/pimple": "^3.3",
+        "phpunit/phpunit": "^9.4",
+        "catfan/medoo": "^1.7",
+        "robmorgan/phinx": "^0.12.4",
+        "symfony/yaml": "^5.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "PK\\": "src/"
+        }
+    }
 }
