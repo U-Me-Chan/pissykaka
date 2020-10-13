@@ -33,7 +33,7 @@ class PostFetcher
             $replies = $this->repository->fetchReplies($id);
 
             foreach ($replies as $reply) {
-                $results['thread_data']['replies'] = $reply->toArray();
+                $results['thread_data']['replies'][] = $reply->toArray();
             }
         } catch (PostNotFound $e) {
             $results['thread_data']['replies'] = [];
