@@ -62,6 +62,7 @@ class PostCreator
             $req->getParams('poster') ? $req->getParams('poster') : 'Anonymous',
             $req->getParams('subject') ? $req->getParams('subject') : '',
             $req->getParams('message') ? $req->getParams('message') : '',
+            time(),
             $board->getId(),
             null
         );
