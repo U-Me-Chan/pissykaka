@@ -35,6 +35,7 @@ class Request
 
         $this->params = isset($query) ? array_merge($query, $post) : $post;
         $this->path = isset($parameters['path']) ? $parameters['path'] : '';
+        $this->path = preg_replace('/\/$/', '', $this->path);
         $this->files = $files;
     }
 
