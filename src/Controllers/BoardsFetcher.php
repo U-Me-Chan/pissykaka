@@ -22,7 +22,7 @@ class BoardsFetcher
         try {
             $boards = $this->repository->fetch();
         } catch (BoardNotFound $e) {
-            return (new Response([], 404))->setException(new BoardNotFound());
+            return (new Response([], 404))->setException(new BoardNotFound('Нет досок, создайте хотя бы одну'));
         }
 
         $results = [];
