@@ -36,7 +36,7 @@ class PostFetcher
                 $results['thread_data']['replies'] = $reply->toArray();
             }
         } catch (PostNotFound $e) {
-            $results['thread_data']['replies'] = false;
+            $results['thread_data']['replies'] = [];
         }
 
         return new Response($results, 200);
