@@ -27,7 +27,7 @@ class Application extends Container
 
         header('Content-type: application/json');
         http_response_code($res->getCode());
-        echo json_encode($res->getBody(), JSON_FORCE_OBJECT);
+        echo json_encode($res->getBody());
 
         exit(0);
     }
