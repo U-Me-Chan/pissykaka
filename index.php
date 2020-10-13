@@ -30,7 +30,9 @@ $app['db'] = function ($app) {
         'database_name' => $app['config']['db']['database'],
         'server' => $app['config']['db']['hostname'],
         'username' => $app['config']['db']['username'],
-        'password' => $app['config']['db']['password']
+        'password' => $app['config']['db']['password'],
+        'charset' => 'utf8',
+        'collation' => 'utf8_unicode_ci'
     ]);
 };
 
