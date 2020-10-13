@@ -13,6 +13,8 @@ use PK\Controllers\PostFetcher;
 use PK\Controllers\PostCreator;
 use PK\Controllers\PostDeleter;
 use PK\Controllers\PostBoardFetcher;
+use PK\Exceptions\Board\BoardNotFound;
+use PK\Exceptions\Board\PostNotFound;
 
 require_once "vendor/autoload.php";
 $config = require "config.php";
@@ -37,16 +39,22 @@ $post_repo  = new PostRepository($app['db']);
 
 $app['router']->addRoute('GET', '/board/all', new BoardsFetcher($board_repo));
 
-$boards = $board_repo->fetch();
+try {
+    $boards = $board_repo->fetch();
 
-foreach ($boards as $board) {
-    $app['router']->addRoute('GET', sprintf('/board/%s', $board->getTag()), new PostBoardFetcher($board_repo, $post_repo));
+    foreach ($boards as $board) {
+        $app['router']->addRoute('GET', sprintf('/board/%s', $board->getTag()), new PostBoardFetcher($board_repo, $post_repo));
 
-    $posts = $post_repo->findByBoardId($board->getId());
+        try {
+            $posts = $post_repo->findByBoardId($board->getId());
 
-    foreach ($posts as $post) {
-        $app['router']->addRoute('GET', sprintf('/post/%s', $post->getId()), new PostFetcher($post_repo));
+            foreach ($posts as $post) {
+                $app['router']->addRoute('GET', sprintf('/post/%s', $post->getId()), new PostFetcher($post_repo));
+            }
+        } catch (PostNotFound $e) {
+        }
     }
+} catch (BoardNotFound $e) {
 }
 
 $app['router']->addRoute('POST', '/post', new PostCreator($post_repo, $board_repo));
