@@ -27,7 +27,7 @@ class PostCreator
         if ($req->getParams('parent_id')) {
             try {
                 /** @var Post */
-                $parent_post = $this->post_repository->findById($req->getParams('id'));
+                $parent_post = $this->post_repository->findById($req->getParams('parent_id'));
             } catch (PostNotFound $e) {
                 return (new Response([], 400))->setException(new PostNotFound('Попытка ответа на несуществующий пост'));
             }
