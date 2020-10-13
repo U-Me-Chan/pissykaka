@@ -33,6 +33,7 @@ class PostBoardFetcher
         }
 
         $results['board_data'] = $board->toArray();
+        $results['board_data']['threads'] = [];
 
         try {
             $posts = $this->post_repo->findByBoardId($board->getId());
