@@ -37,7 +37,7 @@ class PostBoardFetcher
         try {
             $posts = $this->post_repo->findByBoardId($board->getId());
         } catch (PostNotFound $e) {
-            return (new Response($results, 204))->setException($e);
+            return (new Response($results, 200))->setException($e);
         }
 
         foreach ($posts as $post) {
