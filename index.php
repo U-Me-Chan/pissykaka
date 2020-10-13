@@ -6,6 +6,13 @@ use PK\Router;
 use PK\Application;
 use Medoo\Medoo;
 use PK\Exceptions\Http\NotFound;
+use PK\Database\BoardRepository;
+use PK\Database\PostRepository;
+use PK\Controllers\BoardsFetcher;
+use PK\Controllers\PostFetcher;
+use PK\Controllers\PostCreator;
+use PK\Controllers\PostDeleter;
+use PK\Controllers\PostBoardFetcher;
 
 require_once "vendor/autoload.php";
 $config = require "config.php";
@@ -25,70 +32,24 @@ $app['db'] = function ($app) {
     ]);
 };
 
-$app['router']->addRoute('POST', '/post', function (Request $req) {
-    if (!isset($req->getParams()['board_name'])) {
-        return (new Response([], 400))->setException(new \InvalidArgumentException('Не задано имя доски, которой принадлежит поcт'));
+$board_repo = new BoardRepository($app['db']);
+$post_repo  = new PostRepository($app['db']);
+
+$app['router']->addRoute('GET', '/board/all', new BoardsFetcher($board_repo));
+
+$boards = $board_repo->fetch();
+
+foreach ($boards as $board) {
+    $app['router']->addRoute('GET', sprintf('/board/%s', $board->getTag()), new PostBoardFetcher($board_repo, $post_repo));
+
+    $posts = $post_repo->findByBoardId($board->getId());
+
+    foreach ($posts as $post) {
+        $app['router']->addRoute('GET', sprintf('/post/%s', $post->getId()), new PostFetcher($post_repo));
     }
+}
 
-    $board_data = Application::$app['db']->get('boards', '*', ['name' => (string) $req->getParams()['board_name']]);
-    $board_id = (int) $board_data['id'];
-    $poster    = isset($req->getParams()['poster']) ? $req->getParams()['poster'] : 'Anonymous';
-    $subject   = isset($req->getParams()['subject']) ? $req->getParams()['subject'] : '';
-    $message   = isset($req->getParams()['message']) ? $req->getParams()['message'] : '';
-    $timestamp = time();
-    $parent_id = isset($req->getParams()['parent_id']) ? $req->getParams()['parent_id'] : null;
-
-    Application::$app['db']->insert('posts', [
-        'poster' => $poster,
-        'subject' => $subject,
-        'message' => $message,
-        'timestamp' => $timestamp,
-        'board_id' => $board_id,
-        'parent_id' => $parent_id
-    ]);
-
-    return new Response(['id' => Application::$app['db']->id()], 201);
-});
-
-$app['router']->addRoute('DELETE', '/post', function (Request $req) {
-    if (!isset($req->getParams()['id'])) {
-        return (new Response([], 400))->setException(new \InvalidArgumentException('Не задан идентификатор поста для удаления'));
-    }
-
-    Application::$app['db']->delete('posts', ['AND' => ['id' => $req->getParams()['id']]]);
-
-    return new Response([], 204);
-});
-
-$app['router']->addRoute('GET', '/post', function (Request $req) {
-    if (!isset($req->getParams()['id'])) {
-        return (new Response([], 404))->setException(new NotFound());
-    }
-
-    $thread_data = Application::$app['db']->select('posts', '*', ['id' => (int) $req->getParams()['id']]);
-    $thread_data['replies'] = Application::$app['db']->select('posts', '*', ['parent_id' => (int) $req->getParams()['id']]);
-
-    return new Response(['thread_data' => $thread_data]);
-});
-
-$app['router']->addRoute('GET', '/board', function (Request $req) {
-    if (!isset($req->getParams()['name'])) {
-        return (new Response([], 404))->setException(new NotFound());
-    }
-
-    $board_data = Application::$app['db']->get('boards', '*', ['name' => (string) $req->getParams()['name']]);
-    $board_data['threads'] = Application::$app['db']->select(
-        'posts',
-        '*',
-        [
-            'AND' => [
-                'board_id' => (int) $board_data['id'],
-                'parent_id' => null
-            ]
-        ]
-    );
-
-    return new Response(['board_data' => $board_data]);
-});
+$app['router']->addRoute('POST', '/post', new PostCreator($post_repo, $board_repo));
+$app['router']->addRoute('DELETE', '/post', new PostDeleter($post_repo));
 
 $app->run();

@@ -19,7 +19,14 @@ class Request
         if (isset($parameters['query'])) {
             parse_str($parameters['query'], $query);
         }
-     
+
+        $server['CONTENT_TYPE'] = isset($server['CONTENT_TYPE']) ? $server['CONTENT_TYPE'] : '';
+
+        if ($server['CONTENT_TYPE'] == 'application/json') {
+            $postData = file_get_contents('php://input');
+            $post = json_decode($postData, true);
+        }
+
         foreach ($server as $name => $value) {
             if (preg_match('/HTTP_\w+/', $name)) {
                 $this->headers[$name] = $value;
@@ -41,8 +48,16 @@ class Request
         return $this->path;
     }
 
-    public function getParams(): array
+    public function getParams($key = null)
     {
+        if ($key) {
+            if (isset($this->params[$key])) {
+                return $this->params[$key];
+            }
+
+            return null;
+        }
+
         return $this->params;
     }
 

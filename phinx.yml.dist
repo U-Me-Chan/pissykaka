@@ -8,7 +8,7 @@ environments:
 
     development:
         adapter: mysql
-        host: db_old
+        host: localhost
         name: pissykaka
         user: root
         pass: root

@@ -10,21 +10,14 @@ class Router
 {
     private $map;
 
-    public function __construct()
-    {
-        $this->map = [
-            'GET' => [
-                '/404' => function (Request $req) {
-                    return (new Response([], 404))->setException(new NotFound());
-                }
-            ]
-        ];
-    }
-
     public function handle(Request $req): Response
     {
+        if (empty($this->map[$req->getMethod()])) {
+            throw new \RuntimeException();
+        }
+
         if (!isset($this->map[$req->getMethod()][$req->getPath()])) {
-            return call_user_func($this->map['GET']['/404'], $req);
+            return (new Response([], 404))->setException(new NotFound());
         }
 
         return call_user_func($this->map[$req->getMethod()][$req->getPath()], $req);
