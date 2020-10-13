@@ -19,9 +19,9 @@ class BoardsFetcher
 
     public function __invoke(Request $req)
     {
-        $boards = $this->repository->fetch();
-
-        if (!$boards) {
+        try {
+            $boards = $this->repository->fetch();
+        } catch (BoardNotFound $e) {
             return (new Response([], 404))->setException(new BoardNotFound());
         }
 
