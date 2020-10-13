@@ -14,7 +14,7 @@ use PK\Controllers\PostCreator;
 use PK\Controllers\PostDeleter;
 use PK\Controllers\PostBoardFetcher;
 use PK\Exceptions\Board\BoardNotFound;
-use PK\Exceptions\Board\PostNotFound;
+use PK\Exceptions\Post\PostNotFound;
 
 require_once "vendor/autoload.php";
 $config = require "config.php";
