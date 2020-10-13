@@ -41,7 +41,7 @@ class PostBoardFetcher
         }
 
         foreach ($posts as $post) {
-            $results['board_data']['threads'] = $post->toArray();
+            $results['board_data']['threads'][] = $post->toArray();
         }
 
         return new Response($results, 200);
