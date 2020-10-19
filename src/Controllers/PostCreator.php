@@ -39,10 +39,14 @@ class PostCreator
                 $req->getParams('message') ? $req->getParams('message') : '',
                 time(),
                 $parent_post->getBoardId(),
-                $req->getParams('parent_id')
+                $req->getParams('parent_id'),
+                time()
             );
 
             $new_post_id = $this->post_repository->save($post);
+
+            $parent_post->setUpdatedAt(time());
+            $this->post_repository->update($parent_post); // bump thread
 
             return new Response(['post_id' => $new_post_id], 201);
         }
@@ -64,7 +68,8 @@ class PostCreator
             $req->getParams('message') ? $req->getParams('message') : '',
             time(),
             $board->getId(),
-            null
+            null,
+            time()
         );
 
         $new_post_id = $this->post_repository->save($post);

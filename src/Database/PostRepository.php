@@ -17,6 +17,8 @@ class PostRepository
     private const TIMESTAMP = 'timestamp';
     private const BOARD_ID  = 'board_id';
     private const PARENT_ID = 'parent_id';
+    private const UPDATED_AT = 'updated_at';
+
     /** @var Medoo */
     private $db;
 
@@ -27,7 +29,7 @@ class PostRepository
 
     public function fetchReplies(int $id): array
     {
-        $replies_data = $this->db->select(self::TABLE, $this->getFields(), ['parent_id' => $id]);
+        $replies_data = $this->db->select(self::TABLE, $this->getFields(), [self::PARENT_ID => $id]);
 
         if (!$replies_data) {
             throw new PostNotFound('Ответы не найдены');
@@ -44,7 +46,19 @@ class PostRepository
 
     public function findByBoardId(int $board_id): array
     {
-        $posts_data = $this->db->select(self::TABLE, $this->getFields(), ['AND' => ['board_id' => $board_id, 'parent_id' => null]]);
+        $posts_data = $this->db->select(
+            self::TABLE,
+            $this->getFields(),
+            [
+                'AND' => [
+                    self::BOARD_ID  => $board_id,
+                    self::PARENT_ID => null
+                ],
+                'ORDER' => [
+                    self::UPDATED_AT => 'DESC'
+                ]
+            ]
+        );
 
         if (!$posts_data) {
             throw new PostNotFound('Треды не найдены');
@@ -61,7 +75,7 @@ class PostRepository
 
     public function findById(int $id): Post
     {
-        $post_data = $this->db->get(self::TABLE, $this->getFields(), ['id' => $id]);
+        $post_data = $this->db->get(self::TABLE, $this->getFields(), [self::ID => $id]);
 
         if (!$post_data) {
             throw new PostNotFound('Пост не найден');
@@ -73,25 +87,41 @@ class PostRepository
     public function save(Post $post): int
     {
         $this->db->insert(self::TABLE, [
-            'poster' => $post->getPoster(),
-            'subject' => $post->getSubject(),
-            'message' => $post->getMessage(),
-            'timestamp' => $post->getTimestamp(),
-            'board_id' => $post->getBoardId(),
-            'parent_id' => $post->getParentId()
+            self::POSTER => $post->getPoster(),
+            self::SUBJECT => $post->getSubject(),
+            self::MESSAGE => $post->getMessage(),
+            self::TIMESTAMP => $post->getTimestamp(),
+            self::BOARD_ID => $post->getBoardId(),
+            self::PARENT_ID => $post->getParentId(),
+            self::UPDATED_AT => $post->getUpdatedAt()
         ]);
 
         return $this->db->id();
     }
 
+    public function update(Post $post): bool
+    {
+        $this->db->update(self::TABLE, [
+            self::POSTER => $post->getPoster(),
+            self::SUBJECT => $post->getSubject(),
+            self::MESSAGE => $post->getMessage(),
+            self::TIMESTAMP => $post->getTimestamp(),
+            self::BOARD_ID => $post->getBoardId(),
+            self::PARENT_ID => $post->getParentId(),
+            self::UPDATED_AT => $post->getUpdatedAt()
+        ], [self::ID => $post->getId()]);
+
+        return true;
+    }
+
     public function delete(int $id): bool
     {
-        return $this->db->delete(self::TABLE, ['AND' => ['id' => $id]]);
+        return $this->db->delete(self::TABLE, ['AND' => [self::ID => $id]]);
     }
 
     public function getNewId(): int
     {
-        return $this->db->max(self::TABLE, 'id');
+        return $this->db->max(self::TABLE, self::ID);
     }
 
     private function getFields(): array
@@ -103,7 +133,8 @@ class PostRepository
             self::MESSAGE,
             self::TIMESTAMP,
             self::BOARD_ID,
-            self::PARENT_ID
+            self::PARENT_ID,
+            self::UPDATED_AT
         ];
     }
 }

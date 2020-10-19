@@ -21,9 +21,8 @@ final class RenameColumnNameToTagInTableBoardsAndAddColumnName extends AbstractM
         $table = $this->table('boards');
 
         if ($table && $table->hasColumn('tag')) {
-            $table->removeColumn('name')
-                  ->renameColumn('tag', 'name')
-                  ->save();
+            $table->removeColumn('name')->save();
+            $table->renameColumn('tag', 'name')->save();
         }
     }
 }
