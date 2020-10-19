@@ -11,8 +11,9 @@ class Post
     private $timestamp;
     private $board_id;
     private $parent_id;
+    private $updated_at;
 
-    public function __construct(int $id, string $poster, string $subject, string $message, int $timestamp, int $board_id, $parent_id)
+    public function __construct(int $id, string $poster, string $subject, string $message, int $timestamp, int $board_id, $parent_id, int $updated_at)
     {
         $this->id = $id;
         $this->poster = $poster;
@@ -21,6 +22,7 @@ class Post
         $this->timestamp = $timestamp;
         $this->board_id = $board_id;
         $this->parent_id = $parent_id;
+        $this->updated_at = $updated_at;
     }
 
     public static function fromState(array $state): self
@@ -32,7 +34,8 @@ class Post
             $state['message'],
             $state['timestamp'],
             $state['board_id'],
-            $state['parent_id']
+            $state['parent_id'],
+            $state['updated_at']
         );
     }
 
@@ -91,6 +94,16 @@ class Post
         return $this->parent_id;
     }
 
+    public function getUpdatedAt(): int
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(int $timestamp): void
+    {
+        $this->updated_at = $timestamp;
+    }
+
     public function toArray(): array
     {
         return [
@@ -100,7 +113,8 @@ class Post
             'message' => $this->message,
             'timestamp' => $this->timestamp,
             'board_id' => $this->board_id,
-            'parent_id' => $this->parent_id
+            'parent_id' => $this->parent_id,
+            'updated_at' => $this->updated_at
         ];
     }
 }
