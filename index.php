@@ -1,10 +1,6 @@
 <?php
 
 use Medoo\Medoo;
-use FastRoute\RouteParser\Std as RouteParser;
-use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
-use FastRoute\RouteCollector;
-use FastRoute\Dispatcher\GroupCountBased as RouteDispatcher;
 use PK\Http\Request;
 use PK\Http\Response;
 use PK\Router;
