@@ -13,7 +13,7 @@ class RouterTest extends TestCase
     protected function setUp(): void
     {   
         $this->router = new Router();
-        $this->router->addRoute('GET', '/', function (Request $req) {
+        $this->router->addRoute('GET', '/test', function (Request $req) {
             return new Response([], 200);
         });
     }
@@ -29,7 +29,7 @@ class RouterTest extends TestCase
     public function testHnadleFound()
     {
         $server['REQUEST_METHOD'] = 'GET';
-        $server['REQUEST_URI']    = '/';
+        $server['REQUEST_URI']    = '/test';
 
         $this->assertEquals(new Response([], 200), $this->router->handle(new Request($server)));
     }
