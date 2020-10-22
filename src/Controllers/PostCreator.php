@@ -45,9 +45,12 @@ class PostCreator
 
             $new_post_id = $this->post_repository->save($post);
 
-            $parent_post->setUpdatedAt(time());
-            $parent_post->setEstimate($parent_post->getEstimate() + 1);
-            $this->post_repository->update($parent_post); // bump thread
+            if (!$req->getParams('sage')) {
+                $parent_post->setUpdatedAt(time());
+                $this->post_repository->update($parent_post); // bump thread
+
+                $parent_post->setEstimate($parent_post->getEstimate() + 1);
+            }
 
             return new Response(['post_id' => $new_post_id], 201);
         }
