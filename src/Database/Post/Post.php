@@ -4,6 +4,10 @@ namespace PK\Database\Post;
 
 class Post
 {
+    private const COEFFICIENT = 1602370000;
+    private const BOARD_ID = 1;
+    private const NAME = 'Anonymous';
+
     private $id;
     private $poster;
     private $subject;
@@ -12,17 +16,19 @@ class Post
     private $board_id;
     private $parent_id;
     private $updated_at;
+    private $estimate;
 
-    public function __construct(int $id, string $poster, string $subject, string $message, int $timestamp, int $board_id, $parent_id, int $updated_at)
+    public function __construct(int $id, string $poster, string $subject, string $message, int $timestamp, int $board_id, $parent_id, int $updated_at, int $estimate = 0)
     {
-        $this->id = $id;
-        $this->poster = $poster;
-        $this->subject = $subject;
-        $this->message = $message;
-        $this->timestamp = $timestamp;
-        $this->board_id = $board_id;
-        $this->parent_id = $parent_id;
+        $this->id         = $id;
+        $this->poster     = $poster;
+        $this->subject    = $subject;
+        $this->message    = $message;
+        $this->timestamp  = $timestamp;
+        $this->board_id   = $board_id;
+        $this->parent_id  = $parent_id;
         $this->updated_at = $updated_at;
+        $this->estimate   = $estimate;
     }
 
     public static function fromState(array $state): self
@@ -35,7 +41,8 @@ class Post
             $state['timestamp'],
             $state['board_id'],
             $state['parent_id'],
-            $state['updated_at']
+            $state['updated_at'],
+            $state['estimate']
         );
     }
 
@@ -99,6 +106,36 @@ class Post
         return $this->updated_at;
     }
 
+    public function getEstimate(): int
+    {
+        if ($this->estimate !== 0) {
+            return $this->estimate;
+        }
+
+        $x = $this->getTimestamp() / self::COEFFICIENT;
+
+        if ($this->getPoster() !== self::NAME) {
+            $x = $x / 2;
+        }
+
+        if ($this->getParentId() == null) {
+            $x = $x + 1;
+        }
+
+        if ($this->getBoardId() !== self::BOARD_ID) {
+            $x = $x + 2;
+        }
+
+        $x = $x / sprintf('0.%d', strlen($this->getMessage()));
+
+        return (int) $x;
+    }
+
+    public function setEstimate(int $estimate): void
+    {
+        $this->estimate = $estimate;
+    }
+
     public function setUpdatedAt(int $timestamp): void
     {
         $this->updated_at = $timestamp;
@@ -114,7 +151,8 @@ class Post
             'timestamp' => $this->timestamp,
             'board_id' => $this->board_id,
             'parent_id' => $this->parent_id,
-            'updated_at' => $this->updated_at
+            'updated_at' => $this->updated_at,
+            'estimate'   => $this->estimate
         ];
     }
 }

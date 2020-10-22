@@ -10,14 +10,15 @@ class PostRepository
 {
     private const TABLE = 'posts';
 
-    private const ID        = 'id';
-    private const POSTER    = 'poster';
-    private const SUBJECT   = 'subject';
-    private const MESSAGE   = 'message';
-    private const TIMESTAMP = 'timestamp';
-    private const BOARD_ID  = 'board_id';
-    private const PARENT_ID = 'parent_id';
+    private const ID         = 'id';
+    private const POSTER     = 'poster';
+    private const SUBJECT    = 'subject';
+    private const MESSAGE    = 'message';
+    private const TIMESTAMP  = 'timestamp';
+    private const BOARD_ID   = 'board_id';
+    private const PARENT_ID  = 'parent_id';
     private const UPDATED_AT = 'updated_at';
+    private const ESTIMATE   = 'estimate';
 
     /** @var Medoo */
     private $db;
@@ -93,7 +94,8 @@ class PostRepository
             self::TIMESTAMP => $post->getTimestamp(),
             self::BOARD_ID => $post->getBoardId(),
             self::PARENT_ID => $post->getParentId(),
-            self::UPDATED_AT => $post->getUpdatedAt()
+            self::UPDATED_AT => $post->getUpdatedAt(),
+            self::ESTIMATE => $post->getEstimate()
         ]);
 
         return $this->db->id();
@@ -108,7 +110,8 @@ class PostRepository
             self::TIMESTAMP => $post->getTimestamp(),
             self::BOARD_ID => $post->getBoardId(),
             self::PARENT_ID => $post->getParentId(),
-            self::UPDATED_AT => $post->getUpdatedAt()
+            self::UPDATED_AT => $post->getUpdatedAt(),
+            self::ESTIMATE => $post->getEstimate()
         ], [self::ID => $post->getId()]);
 
         return true;
@@ -134,7 +137,8 @@ class PostRepository
             self::TIMESTAMP,
             self::BOARD_ID,
             self::PARENT_ID,
-            self::UPDATED_AT
+            self::UPDATED_AT,
+            self::ESTIMATE
         ];
     }
 }
