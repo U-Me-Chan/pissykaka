@@ -16,10 +16,9 @@ class PostFetcher
         $this->repository = $repository;
     }
 
-    public function __invoke(Request $req)
+    public function __invoke(Request $req, array $vars)
     {
-        $params = explode('/', $req->getPath());
-        $id = $params[2];
+        $id = $vars['id'];
 
         try {
             $post = $this->repository->findById($id);

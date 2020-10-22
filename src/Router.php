@@ -2,25 +2,46 @@
 
 namespace PK;
 
+use FastRoute\RouteParser\Std as RouteParser;
+use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
+use FastRoute\RouteCollector;
+use FastRoute\Dispatcher\GroupCountBased as RouteDispatcher;
 use PK\Exceptions\Http\NotFound;
 use PK\Http\Request;
 use PK\Http\Response;
 
 class Router
 {
-    private $map;
+    private $route_collector;
+
+    public function __construct()
+    {
+        $this->route_collector = new RouteCollector(new RouteParser(), new DataGenerator());
+    }
 
     public function handle(Request $req): Response
     {
-        if (empty($this->map[$req->getMethod()])) {
-            throw new \RuntimeException();
-        }
+        $dispatcher = new RouteDispatcher($this->route_collector->getData());
 
-        if (!isset($this->map[$req->getMethod()][$req->getPath()])) {
+        $routeInfo = $dispatcher->dispatch($req->getMethod(), $req->getPath());
+
+        switch ($routeInfo[0]) {
+        case RouteDispatcher::NOT_FOUND:
             return (new Response([], 404))->setException(new NotFound());
-        }
 
-        return call_user_func($this->map[$req->getMethod()][$req->getPath()], $req);
+            break;
+        case RouteDispatcher::METHOD_NOT_ALLOWED:
+            return new Response([], 405);
+
+            break;
+        case RouteDispatcher::FOUND:
+            $handler = $routeInfo[1];
+            $vars = $routeInfo[2];
+
+            return call_user_func($handler, $req, $vars);
+        default:
+            return new Response([], 500);
+        }
     }
 
     public function addRoute(string $method, string $path, callable $callback): void
@@ -29,6 +50,6 @@ class Router
             throw new \InvalidArgumentException();
         }
 
-        $this->map[$method][$path] = $callback;
+        $this->route_collector->addRoute($method, $path, $callback);
     }
 }

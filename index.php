@@ -1,10 +1,14 @@
 <?php
 
+use Medoo\Medoo;
+use FastRoute\RouteParser\Std as RouteParser;
+use FastRoute\DataGenerator\GroupCountBased as DataGenerator;
+use FastRoute\RouteCollector;
+use FastRoute\Dispatcher\GroupCountBased as RouteDispatcher;
 use PK\Http\Request;
 use PK\Http\Response;
 use PK\Router;
 use PK\Application;
-use Medoo\Medoo;
 use PK\Exceptions\Http\NotFound;
 use PK\Database\BoardRepository;
 use PK\Database\PostRepository;
@@ -17,6 +21,7 @@ use PK\Exceptions\Board\BoardNotFound;
 use PK\Exceptions\Post\PostNotFound;
 
 require_once "vendor/autoload.php";
+
 $config = require "config.php";
 
 $app = new Application($config);
@@ -40,26 +45,9 @@ $board_repo = new BoardRepository($app['db']);
 $post_repo  = new PostRepository($app['db']);
 
 $app['router']->addRoute('GET', '/board/all', new BoardsFetcher($board_repo));
-
-try {
-    $boards = $board_repo->fetch();
-
-    foreach ($boards as $board) {
-        $app['router']->addRoute('GET', sprintf('/board/%s', $board->getTag()), new PostBoardFetcher($board_repo, $post_repo));
-
-        try {
-            $posts = $post_repo->findByBoardId($board->getId());
-
-            foreach ($posts as $post) {
-                $app['router']->addRoute('GET', sprintf('/post/%s', $post->getId()), new PostFetcher($post_repo));
-            }
-        } catch (PostNotFound $e) {
-        }
-    }
-} catch (BoardNotFound $e) {
-}
-
+$app['router']->addRoute('GET', '/board/{tag}', new PostBoardFetcher($board_repo, $post_repo));
+$app['router']->addRoute('GET', '/post/{id:[0-9]+}', new PostFetcher($post_repo));
 $app['router']->addRoute('POST', '/post', new PostCreator($post_repo, $board_repo));
-$app['router']->addRoute('DELETE', '/post', new PostDeleter($post_repo));
+$app['router']->addRoute('DELETE', '/post/{id:[0-9]+}', new PostDeleter($post_repo));
 
 $app->run();

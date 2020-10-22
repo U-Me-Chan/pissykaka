@@ -17,13 +17,13 @@ class PostDeleter
         $this->repository = $repository;
     }
 
-    public function __invoke(Request $req): Response
+    public function __invoke(Request $req, array $vars): Response
     {
-        if (!$req->getParams('id')) {
-            return (new Response([], 400))->setException(new \InvalidArgumentException('Не задан идентификатор удаляемого поста'));
-        }
+        return new Response([], 403);
 
-        $result = $this->repository->delete($req->getParams('id'));
+        $id = $vars['id'];
+
+        $result = $this->repository->delete($id);
 
         if (!$result) {
             return (new Response([], 404))->setException(new PostNotFound('Нельзя удалить несуществующий пост'));

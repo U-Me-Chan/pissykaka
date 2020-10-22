@@ -20,11 +20,9 @@ class PostBoardFetcher
         $this->post_repo = $post_repo;
     }
 
-    public function __invoke(Request $req): Response
+    public function __invoke(Request $req, array $vars): Response
     {
-        $params = explode('/', $req->getPath());
-
-        $board_name = $params[2];
+        $board_name = $vars['tag'];
 
         try {
             $board = $this->board_repo->findByTag($board_name);
