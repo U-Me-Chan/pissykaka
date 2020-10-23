@@ -13,6 +13,7 @@ use PK\Controllers\PostFetcher;
 use PK\Controllers\PostCreator;
 use PK\Controllers\PostDeleter;
 use PK\Controllers\PostBoardFetcher;
+use PK\Controllers\FeedFetcher;
 use PK\Exceptions\Board\BoardNotFound;
 use PK\Exceptions\Post\PostNotFound;
 
@@ -40,8 +41,9 @@ $app['db'] = function ($app) {
 $board_repo = new BoardRepository($app['db']);
 $post_repo  = new PostRepository($app['db']);
 
-$app['router']->addRoute('GET', '/board/all', new BoardsFetcher($board_repo));
+$app['router']->addRoute('GET', '/board/all', new BoardsFetcher($board_repo, $app['db']));
 $app['router']->addRoute('GET', '/board/{tag}', new PostBoardFetcher($board_repo, $post_repo));
+
 $app['router']->addRoute('GET', '/post/{id:[0-9]+}', new PostFetcher($post_repo));
 $app['router']->addRoute('POST', '/post', new PostCreator($post_repo, $board_repo));
 $app['router']->addRoute('DELETE', '/post/{id:[0-9]+}', new PostDeleter($post_repo));
