@@ -22,7 +22,7 @@ class Request
 
         $server['CONTENT_TYPE'] = isset($server['CONTENT_TYPE']) ? $server['CONTENT_TYPE'] : '';
 
-        if ($server['CONTENT_TYPE'] == 'application/json') {
+        if (preg_match('/^application\/json.*/', $server['CONTENT_TYPE'])) {
             $postData = file_get_contents('php://input');
             $post = json_decode($postData, true);
         }
