@@ -57,7 +57,8 @@ class PostRepository
                 ],
                 'ORDER' => [
                     self::UPDATED_AT => 'DESC'
-                ]
+                ],
+                'LIMIT' => 20
             ]
         );
 
