@@ -55,13 +55,15 @@ class PostRepository
         $posts_data = $this->db->select(
             self::TABLE,
             $this->getFields(),
-            [
+            array_merge(
                 $conditions,
-                'ORDER' => [
-                    self::UPDATED_AT => 'DESC'
-                ],
-                'LIMIT' => [$offset, $limit]
-            ]
+                [
+                    'ORDER' => [
+                        self::UPDATED_AT => 'DESC'
+                    ],
+                    'LIMIT' => [$offset, $limit]
+                ]
+            )
         );
 
         $count = $this->db->count('posts', $conditions);
