@@ -47,14 +47,16 @@ class PostRepository
 
     public function findByBoardId(int $board_id, int $limit = 20, int $offset = 0): array
     {
+        $conditions = [
+            self::BOARD_ID  => $board_id,
+            self::PARENT_ID => null
+        ];
+
         $posts_data = $this->db->select(
             self::TABLE,
             $this->getFields(),
             [
-                'AND' => [
-                    self::BOARD_ID  => $board_id,
-                    self::PARENT_ID => null
-                ],
+                $conditions,
                 'ORDER' => [
                     self::UPDATED_AT => 'DESC'
                 ],
@@ -62,7 +64,9 @@ class PostRepository
             ]
         );
 
-        if (!$posts_data) {
+        $count = $this->db->count('posts', $conditions);
+
+        if ($count == 0) {
             throw new PostNotFound('Треды не найдены');
         }
 
@@ -72,7 +76,7 @@ class PostRepository
             $posts[] = Post::fromState($post_data);
         }
 
-        return $posts;
+        return [$posts, $count];
     }
 
     public function findById(int $id): Post

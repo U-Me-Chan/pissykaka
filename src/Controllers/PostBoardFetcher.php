@@ -37,7 +37,7 @@ class PostBoardFetcher
         $offset = $req->getParams('offset') ? $req->getParams('offset') : 0;
 
         try {
-            $posts = $this->post_repo->findByBoardId($board->getId(), $limit, $offset);
+            list($posts, $count) = $this->post_repo->findByBoardId($board->getId(), $limit, $offset);
         } catch (PostNotFound $e) {
             return (new Response($results, 200))->setException($e);
         }
@@ -45,6 +45,8 @@ class PostBoardFetcher
         foreach ($posts as $post) {
             $results['board_data']['threads'][] = $post->toArray();
         }
+
+        $results['board_data']['threads_count'] = $count;
 
         return new Response($results, 200);
     }
