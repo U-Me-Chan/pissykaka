@@ -45,7 +45,7 @@ class PostRepository
         return $replies;
     }
 
-    public function findByBoardId(int $board_id): array
+    public function findByBoardId(int $board_id, int $limit = 20, int $offset = 0): array
     {
         $posts_data = $this->db->select(
             self::TABLE,
@@ -58,7 +58,7 @@ class PostRepository
                 'ORDER' => [
                     self::UPDATED_AT => 'DESC'
                 ],
-                'LIMIT' => 20
+                'LIMIT' => [$offset, $limit]
             ]
         );
 

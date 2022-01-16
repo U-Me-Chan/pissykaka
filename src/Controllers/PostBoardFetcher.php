@@ -33,8 +33,11 @@ class PostBoardFetcher
         $results['board_data'] = $board->toArray();
         $results['board_data']['threads'] = [];
 
+        $limit  = $req->getParams('limit') ? $req->getParams('limit') : 20;
+        $offset = $req->getParams('offset') ? $req->getParams('offset') : 0;
+
         try {
-            $posts = $this->post_repo->findByBoardId($board->getId());
+            $posts = $this->post_repo->findByBoardId($board->getId(), $limit, $offset);
         } catch (PostNotFound $e) {
             return (new Response($results, 200))->setException($e);
         }
