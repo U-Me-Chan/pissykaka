@@ -126,7 +126,9 @@ class Post
             $x = $x + 2;
         }
 
-        $x = $x / sprintf('0.%d', strlen($this->getMessage()));
+        $len_message = sprintf('0.%d', strlen($this->getMessage()));
+
+        $x = $len_message == 0 ? 0 : $x / $len_message;
 
         return (int) $x;
     }
