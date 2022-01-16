@@ -32,6 +32,8 @@ class PostCreator
                 return (new Response([], 400))->setException(new PostNotFound('Попытка ответа на несуществующий пост'));
             }
 
+            $message = $req->getParams('message') ? $req->getParams('message') : throw new \InvalidArgumentException("Нельзя создать пост без сообщения");
+
             $post = new Post(
                 $this->post_repository->getNewId(),
                 $req->getParams('poster') ? $req->getParams('poster') : 'Anonymous',
