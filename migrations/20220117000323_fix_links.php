@@ -23,7 +23,7 @@ final class FixLinks extends AbstractMigration
         foreach ($posts as $post) {
             $message = str_replace('scheoble.ml', 'scheoble.xyz', $post['message']);
 
-            $this->execute("UPDATE posts SET message = {$message} WHERE id = {$post['id']}");
+            $this->execute("UPDATE posts SET message = '{$message}' WHERE id = {$post['id']}");
         }
     }
 }
