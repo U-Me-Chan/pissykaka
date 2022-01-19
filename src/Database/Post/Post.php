@@ -8,27 +8,19 @@ class Post
     private const BOARD_ID = 1;
     private const NAME = 'Anonymous';
 
-    private $id;
-    private $poster;
-    private $subject;
-    private $message;
-    private $timestamp;
-    private $board_id;
-    private $parent_id;
-    private $updated_at;
-    private $estimate;
-
-    public function __construct(int $id, string $poster, string $subject, string $message, int $timestamp, int $board_id, $parent_id, int $updated_at, int $estimate = 0)
-    {
-        $this->id         = $id;
-        $this->poster     = $poster;
-        $this->subject    = $subject;
-        $this->message    = $message;
-        $this->timestamp  = $timestamp;
-        $this->board_id   = $board_id;
-        $this->parent_id  = $parent_id;
-        $this->updated_at = $updated_at;
-        $this->estimate   = $estimate;
+    public function __construct(
+        private int $id,
+        private string $poster,
+        private string $subject,
+        private string $message,
+        private int $timestamp,
+        private int $board_id,
+        private int|null $parent_id,
+        private int $updated_at,
+        private int $estimate = 0,
+        private string $password = ''
+    ) {
+        $this->password = empty($this->password) ? hash('sha256', bin2hex(random_bytes(5))) : $this->password;
     }
 
     public static function fromState(array $state): self
@@ -42,7 +34,8 @@ class Post
             $state['board_id'],
             $state['parent_id'],
             $state['updated_at'],
-            $state['estimate']
+            $state['estimate'],
+            $state['password']
         );
     }
 
@@ -156,5 +149,10 @@ class Post
             'updated_at' => $this->updated_at,
             'estimate'   => $this->estimate
         ];
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
     }
 }

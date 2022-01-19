@@ -6,6 +6,8 @@ use Medoo\Medoo;
 use PK\Database\PostRepository;
 use PK\Http\Request;
 use PK\Http\Response;
+use PK\Exceptions\Post\PostNotFound;
+use PK\Database\Post\Post;
 
 class PostDeleter
 {
@@ -19,16 +21,23 @@ class PostDeleter
 
     public function __invoke(Request $req, array $vars): Response
     {
-        return new Response([], 403);
-
-        $id = $vars['id'];
-
-        $result = $this->repository->delete($id);
-
-        if (!$result) {
-            return (new Response([], 404))->setException(new PostNotFound('Нельзя удалить несуществующий пост'));
+        if (!$req->getParams('password')) {
+            return (new Response([], 400))->setException(new \InvalidArgumentException('Укажите пароль для удаления поста'));
         }
 
-        return new Response([], 204);
+        try {
+            /** @var Post */
+            $post = $this->repository->findById($vars['id']);
+        } catch (PostNotFound $e) {
+            return (new Response([], 404))->setException($e);
+        }
+
+        if (hash_equals($req->getParams('password'), $post->getPassword())) {
+            $this->repository->delete($vars['id']);
+
+            return new Response([], 204);
+        }
+
+        return new Response([], 401);
     }
 }

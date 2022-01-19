@@ -13,13 +13,10 @@ use PK\Exceptions\Board\BoardNotFound;
 
 class PostCreator
 {
-    private $post_repository;
-    private $board_repository;
-
-    public function __construct(PostRepository $post_repository, BoardRepository $board_repository)
-    {
-        $this->post_repository = $post_repository;
-        $this->board_repository = $board_repository;
+    public function __construct(
+        private PostRepository $post_repository,
+        private BoardRepository $board_repository
+    ) {
     }
 
     public function __invoke(Request $req): Response
@@ -54,7 +51,7 @@ class PostCreator
                 $parent_post->setEstimate($parent_post->getEstimate() + 1);
             }
 
-            return new Response(['post_id' => $new_post_id], 201);
+            return new Response(['post_id' => $new_post_id, 'password' => $post->getPassword()], 201);
         }
 
         if (!$req->getParams('tag')) {
@@ -80,6 +77,6 @@ class PostCreator
 
         $new_post_id = $this->post_repository->save($post);
 
-        return new Response(['post_id' => $new_post_id], 201);
+        return new Response(['post_id' => $new_post_id, 'password' => $post->getPassword()], 201);
     }
 }

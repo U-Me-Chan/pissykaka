@@ -19,6 +19,7 @@ class PostRepository
     private const PARENT_ID  = 'parent_id';
     private const UPDATED_AT = 'updated_at';
     private const ESTIMATE   = 'estimate';
+    private const PASSWORD   = 'password';
 
     /** @var Medoo */
     private $db;
@@ -102,7 +103,8 @@ class PostRepository
             self::BOARD_ID => $post->getBoardId(),
             self::PARENT_ID => $post->getParentId(),
             self::UPDATED_AT => $post->getUpdatedAt(),
-            self::ESTIMATE => $post->getEstimate()
+            self::ESTIMATE => $post->getEstimate(),
+            self::PASSWORD => $post->getPassword()
         ]);
 
         return $this->db->id();
@@ -126,7 +128,14 @@ class PostRepository
 
     public function delete(int $id): bool
     {
-        return $this->db->delete(self::TABLE, ['AND' => [self::ID => $id]]);
+        /** @var PDOStatement */
+        $pdo = $this->db->delete(self::TABLE, ['AND' => [self::ID => $id]]);
+
+        if ($pdo->rowCount() == 1) {
+            return true;
+        }
+
+        return false;
     }
 
     public function getNewId(): int
@@ -145,7 +154,8 @@ class PostRepository
             self::BOARD_ID,
             self::PARENT_ID,
             self::UPDATED_AT,
-            self::ESTIMATE
+            self::ESTIMATE,
+            self::PASSWORD
         ];
     }
 }
