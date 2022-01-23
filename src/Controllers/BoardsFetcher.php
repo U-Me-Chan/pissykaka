@@ -53,7 +53,7 @@ class BoardsFetcher
                 'boards.tag'
             ],
             [
-                'AND' => ['boards.tag[!]' => 'test'],
+                'AND' => ['boards.tag[!]' => ['test', 'fap']],
                 'LIMIT' => 20,
                 'ORDER' => ['posts.timestamp' => 'DESC']
             ]
