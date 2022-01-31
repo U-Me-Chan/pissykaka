@@ -14,9 +14,11 @@ class BoardRepository extends ARepository
     private const TAG = 'tag';
     private const NAME = 'name';
 
+    private const EXCLUDED_TAGS = ['fap', 'test'];
+
     public function fetch(): array
     {
-        $boards_data = $this->db->select(self::TABLE, $this->getFields());
+        $boards_data = $this->db->select(self::TABLE, $this->getFields(), ['tag[!]' => self::EXCLUDED_TAGS]);
 
         if (!$boards_data) {
             throw new BoardNotFound('Не найдено ни одной доски');
