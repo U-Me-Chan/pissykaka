@@ -2,6 +2,8 @@
 
 namespace PK\Database\Post;
 
+use PK\Database\Post\Media;
+
 class Post
 {
     private const COEFFICIENT = 1602370000;
@@ -139,20 +141,38 @@ class Post
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'poster' => $this->poster,
-            'subject' => $this->subject,
-            'message' => $this->message,
-            'timestamp' => $this->timestamp,
-            'board_id' => $this->board_id,
-            'parent_id' => $this->parent_id,
-            'updated_at' => $this->updated_at,
-            'estimate'   => $this->estimate
+            'id'                => $this->id,
+            'poster'            => $this->poster,
+            'subject'           => $this->subject,
+            'message'           => $this->message,
+            'truncated_message' => $this->getTruncatedMessage(),
+            'timestamp'         => $this->timestamp,
+            'board_id'          => $this->board_id,
+            'parent_id'         => $this->parent_id,
+            'updated_at'        => $this->updated_at,
+            'estimate'          => $this->estimate,
+            'media'             => $this->getMedia()
         ];
     }
 
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    public function getMedia(): array
+    {
+        $media = new Media($this->message);
+
+        return $media->getMedias();
+    }
+
+    public function getTruncatedMessage(): string
+    {
+        $message = preg_replace('/https?:\/\/www\.youtube\.com\/watch\?v=([0-9a-z_-]+)/mi', '', $this->message);
+        $message = preg_replace('/https?:\/\/youtu\.be\/([0-9a-z_-]+)/mi', '', $this->message);
+        $message = preg_replace('/(?!\\!\[[a-z]+\]\()(?<![\'|"])(https:\/\/pbs\.twimg\.com\/media\/[a-z0-9?=&]+|https?:\/\/[a-z.\0-9-_]+\.(jpg|jpeg?|gif|png)(\?[a-z=&0-9]+)?)(?<![\'|"])$(?!\))/mi', '', $this->message);
+
+        return $message;
     }
 }
