@@ -29,6 +29,12 @@ class PostCreator
                 return (new Response([], 400))->setException(new PostNotFound('Попытка ответа на несуществующий пост'));
             }
 
+            $replies_count = $this->post_repository->getRepliesCount($parent_post->getId());
+
+            if ($replies_count > 500) {
+                return (new Response([], 400))->setException(new \Exception('Превышен лимит количества ответов на пост (500 ответов). Создайте новый пост'));
+            }
+
             $message = $req->getParams('message') ? $req->getParams('message') : throw new \InvalidArgumentException("Нельзя создать пост без сообщения");
 
             $post = new Post(
