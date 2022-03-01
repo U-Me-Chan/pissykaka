@@ -29,6 +29,11 @@ class PostRepository
         $this->db = $db;
     }
 
+    public function getRepliesCount(int $id): int
+    {
+        return $this->db->count(self::TABLE, [self::PARENT_ID => $id]);
+    }
+
     public function fetchReplies(int $id): array
     {
         $replies_data = $this->db->select(self::TABLE, $this->getFields(), [self::PARENT_ID => $id]);
