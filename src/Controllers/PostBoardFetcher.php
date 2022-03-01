@@ -43,7 +43,10 @@ class PostBoardFetcher
         }
 
         foreach ($posts as $post) {
-            $results['board_data']['threads'][] = $post->toArray();
+            $thread_data = $post->toArray();
+            $thread_data['replies_count'] = $this->post_repo->getRepliesCount($post->getId());
+
+            $results['board_data']['threads'][] = $thread_data;
         }
 
         $results['board_data']['threads_count'] = $count;
