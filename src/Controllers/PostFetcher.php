@@ -27,7 +27,7 @@ class PostFetcher
         }
 
         $results['thread_data'] = $post->toArray();
-        $results['replies_count'] = $this->repository->getRepliesCount($id);
+        $results['thread_data']['replies_count'] = $this->repository->getRepliesCount($id);
 
         try {
             $replies = $this->repository->fetchReplies($id);
