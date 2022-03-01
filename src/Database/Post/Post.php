@@ -2,8 +2,6 @@
 
 namespace PK\Database\Post;
 
-use PK\Database\Post\Media;
-
 class Post
 {
     private const COEFFICIENT = 1602370000;
@@ -140,18 +138,20 @@ class Post
 
     public function toArray(): array
     {
+        list($media, $trun_message) = $this->getMediaAndTruncatedMessage();
+
         return [
             'id'                => $this->id,
             'poster'            => $this->poster,
             'subject'           => $this->subject,
             'message'           => $this->message,
-            'truncated_message' => $this->getTruncatedMessage(),
+            'truncated_message' => $trun_message,
             'timestamp'         => $this->timestamp,
             'board_id'          => $this->board_id,
             'parent_id'         => $this->parent_id,
             'updated_at'        => $this->updated_at,
             'estimate'          => $this->estimate,
-            'media'             => $this->getMedia()
+            'media'             => $media
         ];
     }
 
@@ -160,19 +160,70 @@ class Post
         return $this->password;
     }
 
-    public function getMedia(): array
+    public function getMediaAndTruncatedMessage(): array
     {
-        $media = new Media($this->message);
+        $message = $this->message;
+        $media   = $images = $youtubes = [];
 
-        return $media->getMedias();
-    }
+        if (preg_match_all('/\[\!\[\]\((?<preview>.+)\)\]\((?<link>.+)\)/mi', $message, $matches)) {
+            foreach ($matches['link'] as $k => $link) {
+                $images[$link] = [
+                    'link' => $link,
+                    'preview' => $matches['preview'][$k]
+                ];
+            }
+        }
 
-    public function getTruncatedMessage(): string
-    {
-        $message = preg_replace('/https?:\/\/www\.youtube\.com\/watch\?v=([0-9a-z_-]+)/mi', '', $this->message);
-        $message = preg_replace('/https?:\/\/youtu\.be\/([0-9a-z_-]+)/mi', '', $this->message);
-        $message = preg_replace('/(?!\\!\[[a-z]+\]\()(?<![\'|"])(https:\/\/pbs\.twimg\.com\/media\/[a-z0-9?=&]+|https?:\/\/[a-z.\0-9-_]+\.(jpg|jpeg?|gif|png)(\?[a-z=&0-9]+)?)(?<![\'|"])$(?!\))/mi', '', $this->message);
+        $message = preg_replace('/\[\!\[\]\((?<preview>.+)\)\]\((?<link>.+)\)/mi', '', $message);
 
-        return $message;
+        if (preg_match_all('/https?\:\/\/[a-z0-9_\-.\/]+\.(jpe?g?|gif|png)(\?[a-z0-9=_\/\-&]+)?/mi', $message, $matches)) {
+            foreach ($matches[0] as $link) {
+                $images[$link] = [
+                    'link' => $link,
+                    'preview' => $link
+                ];
+            }
+        }
+
+        $message = preg_replace('/https?\:\/\/[a-z0-9_\-.\/]+\.(jpe?g?|gif|png)(\?[a-z0-9=_\/\-&]+)?/mi', '',  $message);
+
+        if (preg_match_all('/https?\:\/\/pbs\.twimg\.com\/media\/[a-z0-9\?=&]+/mi', $message, $matches)) {
+            foreach ($matches[0] as $link) {
+                $images[$link] = [
+                    'link' => $link,
+                    'preview' => $link
+                ];
+            }
+        }
+
+        $message = preg_replace('/https?\:\/\/pbs\.twimg\.com\/media\/[a-z0-9\?=&]+/mi', '', $message);
+
+        if (preg_match_all('/https?:\/\/www\.youtube\.com\/watch\?v=([0-9a-z_-]+)/mi', $message, $matches)) {
+            foreach ($matches[1] as $id) {
+                $youtubes[$id] = [
+                    'link' => "https://youtu.be/{$id}",
+                    'preview' => "http://i1.ytimg.com/vi/{$id}/hqdefault.jpg"
+                ];
+            }
+        }
+
+        if (preg_match_all('/https?:\/\/youtu\.be\/([0-9a-z_-]+)/mi', $message, $matches)) {
+            foreach ($matches[1] as $id) {
+                $youtubes[$id] = [
+                    'link' => "https://youtu.be/{$id}",
+                    'preview' => "https://i1.ytimg.com/vi/{$id}/hqdefault.jpg"
+                ];
+            }
+        }
+
+        $message = preg_replace('/https?:\/\/www\.youtube\.com\/watch\?v=([0-9a-z_-]+)/mi', '', $message);
+        $message = preg_replace('/https?:\/\/youtu\.be\/([0-9a-z_-]+)/mi', '', $message);
+
+        $data = [
+            'images' => array_values($images),
+            'youtubes' => array_values($youtubes)
+        ];
+
+        return [$data, $message];
     }
 }
