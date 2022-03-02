@@ -126,7 +126,7 @@ class Post implements \JsonSerializable
         $message = preg_replace('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|https?\:\/\/pbs\.twimg\.com\/media\/[a-z0-9\?=&]+/mi', '', $message);
 
         if (preg_match_all('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|https?:\/\/www\.youtube\.com\/watch\?v=([0-9a-z_-]+)/mi', $message, $matches)) {
-            foreach ($matches[1] as $id) {
+            foreach ($matches[4] as $id) {
                 $youtubes[$id] = [
                     'link' => "https://youtu.be/{$id}",
                     'preview' => "http://i1.ytimg.com/vi/{$id}/hqdefault.jpg"
@@ -135,7 +135,7 @@ class Post implements \JsonSerializable
         }
 
         if (preg_match_all('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|https?:\/\/youtu\.be\/([0-9a-z_-]+)/mi', $message, $matches)) {
-            foreach ($matches[1] as $id) {
+            foreach ($matches[4] as $id) {
                 $youtubes[$id] = [
                     'link' => "https://youtu.be/{$id}",
                     'preview' => "https://i1.ytimg.com/vi/{$id}/hqdefault.jpg"
