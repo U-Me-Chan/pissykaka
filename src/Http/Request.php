@@ -62,8 +62,16 @@ class Request
         return $this->params;
     }
 
-    public function getHeaders(): array
+    public function getHeaders($key = null)
     {
+        if ($key) {
+            if (isset($this->headers[$key])) {
+                return $this->headers[$key];
+            }
+
+            return null;
+        }
+
         return $this->headers;
     }
 
