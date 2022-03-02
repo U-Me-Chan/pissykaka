@@ -165,7 +165,7 @@ class Post
         $message = $this->message;
         $media   = $images = $youtubes = [];
 
-        if (preg_match_all('/\[\!\[\]\((?<preview>.+)\)\]\((?<link>.+)\)/mi', $message, $matches)) {
+        if (preg_match_all('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|\[\!\[\]\((?<preview>.+)\)\]\((?<link>.+)\)/mi', $message, $matches)) {
             foreach ($matches['link'] as $k => $link) {
                 $images[$link] = [
                     'link' => $link,
@@ -174,9 +174,9 @@ class Post
             }
         }
 
-        $message = preg_replace('/\[\!\[\]\((?<preview>.+)\)\]\((?<link>.+)\)/mi', '', $message);
+        $message = preg_replace('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|\[\!\[\]\((?<preview>.+)\)\]\((?<link>.+)\)/mi', '', $message);
 
-        if (preg_match_all('/https?\:\/\/[a-z0-9_\-.\/]+\.(jpe?g?|gif|png)(\?[a-z0-9=_\/\-&]+)?/mi', $message, $matches)) {
+        if (preg_match_all('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|https?\:\/\/[a-z0-9_\-.\/]+\.(jpe?g?|gif|png)(\?[a-z0-9=_\/\-&]+)?/mi', $message, $matches)) {
             foreach ($matches[0] as $link) {
                 $images[$link] = [
                     'link' => $link,
@@ -185,9 +185,9 @@ class Post
             }
         }
 
-        $message = preg_replace('/https?\:\/\/[a-z0-9_\-.\/]+\.(jpe?g?|gif|png)(\?[a-z0-9=_\/\-&]+)?/mi', '',  $message);
+        $message = preg_replace('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|https?\:\/\/[a-z0-9_\-.\/]+\.(jpe?g?|gif|png)(\?[a-z0-9=_\/\-&]+)?/mi', '',  $message);
 
-        if (preg_match_all('/https?\:\/\/pbs\.twimg\.com\/media\/[a-z0-9\?=&]+/mi', $message, $matches)) {
+        if (preg_match_all('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|https?\:\/\/pbs\.twimg\.com\/media\/[a-z0-9\?=&]+/mi', $message, $matches)) {
             foreach ($matches[0] as $link) {
                 $images[$link] = [
                     'link' => $link,
@@ -196,9 +196,9 @@ class Post
             }
         }
 
-        $message = preg_replace('/https?\:\/\/pbs\.twimg\.com\/media\/[a-z0-9\?=&]+/mi', '', $message);
+        $message = preg_replace('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|https?\:\/\/pbs\.twimg\.com\/media\/[a-z0-9\?=&]+/mi', '', $message);
 
-        if (preg_match_all('/https?:\/\/www\.youtube\.com\/watch\?v=([0-9a-z_-]+)/mi', $message, $matches)) {
+        if (preg_match_all('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|https?:\/\/www\.youtube\.com\/watch\?v=([0-9a-z_-]+)/mi', $message, $matches)) {
             foreach ($matches[1] as $id) {
                 $youtubes[$id] = [
                     'link' => "https://youtu.be/{$id}",
@@ -207,7 +207,7 @@ class Post
             }
         }
 
-        if (preg_match_all('/https?:\/\/youtu\.be\/([0-9a-z_-]+)/mi', $message, $matches)) {
+        if (preg_match_all('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|https?:\/\/youtu\.be\/([0-9a-z_-]+)/mi', $message, $matches)) {
             foreach ($matches[1] as $id) {
                 $youtubes[$id] = [
                     'link' => "https://youtu.be/{$id}",
@@ -216,8 +216,8 @@ class Post
             }
         }
 
-        $message = preg_replace('/https?:\/\/www\.youtube\.com\/watch\?v=([0-9a-z_-]+)/mi', '', $message);
-        $message = preg_replace('/https?:\/\/youtu\.be\/([0-9a-z_-]+)/mi', '', $message);
+        $message = preg_replace('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|https?:\/\/www\.youtube\.com\/watch\?v=([0-9a-z_-]+)/mi', '', $message);
+        $message = preg_replace('/((`{1,})[\s\S]+?(`{1,}))(*SKIP)(*F)|https?:\/\/youtu\.be\/([0-9a-z_-]+)/mi', '', $message);
 
         $data = [
             'images' => array_values($images),
