@@ -24,6 +24,6 @@ final class GetThread
             return new Response([], 404);
         }
 
-        return new Response([$post]);
+        return new Response(['thread_data' => $post]);
     }
 }
