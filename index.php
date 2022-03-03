@@ -4,6 +4,7 @@ use Medoo\Medoo;
 use PK\Router;
 use PK\Application;
 use PK\Http\Request;
+use PK\Http\Response;
 use PK\Database\BoardRepository;
 use PK\Database\PostRepository;
 use PK\Controllers\BoardsFetcher;

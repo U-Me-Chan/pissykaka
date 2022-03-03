@@ -41,7 +41,8 @@ class Post implements \JsonSerializable
             $state['estimate'],
             $state['password'],
             !empty($state['replies']) ? $state['replies'] : [],
-            isset($state['replies_count']) ? $state['replies_count'] : 0
+            isset($state['replies_count']) ? $state['replies_count'] : 0,
+            isset($state['is_verify']) ? $state['is_verify'] : false
         );
     }
 
@@ -82,7 +83,8 @@ class Post implements \JsonSerializable
         public int $estimate,
         public string $password,
         public array $replies = [],
-        public int $replies_count = 0
+        public int $replies_count = 0,
+        public bool $is_verify
     ) {
     }
 
