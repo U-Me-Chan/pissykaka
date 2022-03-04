@@ -7,10 +7,10 @@ final class V20220303230427 extends AbstractMigration
 {
     public function change(): void
     {
-        $this->table('passports', ['id' => false, 'primary_key' => ['name', 'key']])
+        $this->table('passports', ['id' => false, 'primary_key' => ['name', 'hash']])
              ->addColumn('name', 'string', ['limit' => 255, 'null' => false])
-             ->addColumn('key', 'string', ['limit' => 255, 'null' => false])
-             ->addIndex(['key'], ['unique' => true])
+             ->addColumn('hash', 'string', ['limit' => 255, 'null' => false])
+             ->addIndex(['hash'], ['unique' => true])
              ->addIndex(['name'], ['unique' => true])
              ->create();
     }

@@ -133,7 +133,7 @@ class PostStorage
     {
         $hash = hash('sha512', $poster);
 
-        $name = $this->db->get('passports', 'name', ['key' => $hash]);
+        $name = $this->db->get('passports', 'name', ['hash' => $hash]);
 
         if ($name == null) {
             return [

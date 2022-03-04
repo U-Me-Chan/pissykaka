@@ -34,7 +34,7 @@ final class CreatePassport
         try {
             $this->db->insert('passports', [
                 'name' => $req->getParams('name'),
-                'key'  => hash('sha512', $req->getParams('key'))
+                'hash'  => hash('sha512', $req->getParams('key'))
             ]);
         } catch (\PDOException $e) {
             return (new Response([], 409))->setException(new \Exception("Такой ключ или имя уже используется, выберите иное"));
