@@ -66,7 +66,7 @@ class Post implements \JsonSerializable
         $data = get_object_vars($this);
         $data['board_id'] = $data['board']->id;
 
-        unset($data['board'], $data['replies'], $data['replies_count']);
+        unset($data['board'], $data['replies'], $data['replies_count'], $data['is_verify']);
 
         return $data;
     }
@@ -84,7 +84,7 @@ class Post implements \JsonSerializable
         public string $password,
         public array $replies = [],
         public int $replies_count = 0,
-        public bool $is_verify
+        public bool $is_verify = false
     ) {
     }
 

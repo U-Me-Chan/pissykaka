@@ -22,6 +22,7 @@ use PK\Posts\Controllers\CreateThread;
 use PK\Posts\Controllers\CreateReply;
 use PK\Posts\Controllers\UpdatePost;
 use PK\Posts\Controllers\DeletePost;
+use PK\Passports\Controllers\CreatePassport;
 
 require_once "vendor/autoload.php";
 
@@ -69,5 +70,7 @@ $r->addRoute('POST', '/v2/post', new CreateThread($board_storage, $post_storage)
 $r->addRoute('PUT', '/v2/post/{id:[0-9]+}', new CreateReply($post_storage));
 $r->addRoute('PATCH', 'v2/post/{id:[0-9]+}', new UpdatePost($post_storage, $config['maintenance_key']));
 $r->addRoute('DELETE', '/v2/post/{id:[0-9]+}', new DeletePost($post_storage, $config['maintenance_key']));
+
+$r->addRoute('POST', '/v2/passport', new CreatePassport($app['db']));
 
 $app->run();
