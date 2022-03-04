@@ -18,7 +18,8 @@ class Post
         private int|null $parent_id,
         private int $updated_at,
         private int $estimate = 0,
-        private string $password = ''
+        private string $password = '',
+        private bool $is_verify = false
     ) {
         $this->password = empty($this->password) ? hash('sha256', bin2hex(random_bytes(5))) : $this->password;
     }
@@ -35,7 +36,8 @@ class Post
             $state['parent_id'],
             $state['updated_at'],
             $state['estimate'],
-            $state['password']
+            $state['password'],
+            isset($state['is_verify']) ? $state['is_verify'] : false
         );
     }
 
@@ -151,7 +153,8 @@ class Post
             'parent_id'         => $this->parent_id,
             'updated_at'        => $this->updated_at,
             'estimate'          => $this->estimate,
-            'media'             => $media
+            'media'             => $media,
+            'is_verify'         => $this->is_verify
         ];
     }
 

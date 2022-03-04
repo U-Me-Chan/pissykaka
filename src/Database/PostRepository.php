@@ -45,6 +45,7 @@ class PostRepository
         $replies = [];
 
         foreach ($replies_data as $reply_data) {
+            $reply_data = array_merge($reply_data, $this->getVerifyData($reply_data['poster']));
             $replies[] = Post::fromState($reply_data);
         }
 
@@ -81,6 +82,7 @@ class PostRepository
         $posts = [];
 
         foreach ($posts_data as $post_data) {
+            $post_data = array_merge($post_data, $this->getVerifyData($post_data['poster']));
             $posts[] = Post::fromState($post_data);
         }
 
@@ -94,6 +96,8 @@ class PostRepository
         if (!$post_data) {
             throw new PostNotFound('Пост не найден');
         }
+
+        $post_data = array_merge($post_data, $this->getVerifyData($post_data['poster']));
 
         return Post::fromState($post_data);
     }
@@ -161,6 +165,25 @@ class PostRepository
             self::UPDATED_AT,
             self::ESTIMATE,
             self::PASSWORD
+        ];
+    }
+
+    private function getVerifyData(string $poster): array
+    {
+        $hash = hash('sha512', $poster);
+
+        $name = $this->db->get('passports', 'name', ['key' => $hash]);
+
+        if ($name == null) {
+            return [
+                'poster'    => $poster,
+                'is_verify' => false
+            ];
+        }
+
+        return [
+            'poster' => $name,
+            'is_verify' => true
         ];
     }
 }
