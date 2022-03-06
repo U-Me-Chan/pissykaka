@@ -40,6 +40,6 @@ final class CreateReply
 
         $id = $this->storage->save($post);
 
-        return new Response([$id], 201);
+        return new Response(['post_id' => $id, 'password' => $post->password], 201);
     }
 }

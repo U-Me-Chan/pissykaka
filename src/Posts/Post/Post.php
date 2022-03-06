@@ -23,7 +23,7 @@ class Post implements \JsonSerializable
             $parent_id,
             time(),
             0,
-            bin2hex(random_bytes(5))
+            hash('sha256', bin2hex(random_bytes(5)))
         );
     }
 
@@ -42,7 +42,7 @@ class Post implements \JsonSerializable
             $state['password'],
             !empty($state['replies']) ? $state['replies'] : [],
             isset($state['replies_count']) ? $state['replies_count'] : 0,
-            isset($state['is_verify']) ? $state['is_verify'] : false
+            $state['is_verify'] == 'yes' ? true : false
         );
     }
 

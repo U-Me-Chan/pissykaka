@@ -45,16 +45,12 @@ class PostStorage
         foreach ($post_datas as $post_data) {
             $post_data['board_data'] = $boards[$post_data['board_id']];
 
-            $post_data = array_merge($post_data, $this->getVerifyData($post_data['poster']));
-
             $replies = $this->db->select('posts', '*', ['parent_id' => $post_data['id'], 'LIMIT' => 3, 'ORDER' => ['id' => 'DESC']]);
             $replies_count = $this->db->count('posts', ['parent_id' => $post_data['id']]);
 
             if ($replies !== null) {
                 foreach (array_reverse($replies) as $reply_data) {
                     $reply_data['board_data'] = $post_data['board_data'];
-
-                    $reply_data = array_merge($reply_data, $this->getVerifyData($reply_data['poster']));
 
                     $post_data['replies'][] = Post::fromArray($reply_data);
                 }
@@ -81,16 +77,12 @@ class PostStorage
 
         $post_data['board_data'] = $board->toArray();
 
-        $post_data = array_merge($post_data, $this->getVerifyData($post_data['poster']));
-
         $replies = $this->db->select('posts', '*', ['parent_id' => $post_data['id']]);
         $replies_count = $this->db->count('posts', ['parent_id' => $post_data['id']]);
 
         if ($replies !== null) {
             foreach ($replies as $reply_data) {
                 $reply_data['board_data'] = $post_data['board_data'];
-
-                $reply_data = array_merge($reply_data, $this->getVerifyData($reply_data['poster']));
 
                 $post_data['replies'][] = Post::fromArray($reply_data);
             }
@@ -107,6 +99,15 @@ class PostStorage
 
         $post_data = $post->toArray();
         unset($post_data['id']);
+
+        $name = $this->db->get('passports', 'name', ['hash' => hash('sha512', $post_data['poster'])]);
+
+        if ($name !== null) {
+            $post_data['is_verify'] = 'yes';
+            $post_data['poster'] = $name;
+        } else {
+            $post_data['is_verify'] = 'no';
+        }
 
         if ($id == 0) {
             $this->db->insert('posts', $post_data);
@@ -127,24 +128,5 @@ class PostStorage
         }
 
         throw new \OutOfBoundsException();
-    }
-
-    private function getVerifyData(string $poster): array
-    {
-        $hash = hash('sha512', $poster);
-
-        $name = $this->db->get('passports', 'name', ['hash' => $hash]);
-
-        if ($name == null) {
-            return [
-                'poster'    => $poster,
-                'is_verify' => false
-            ];
-        }
-
-        return [
-            'poster'    => $name,
-            'is_verify' => true
-        ];
     }
 }

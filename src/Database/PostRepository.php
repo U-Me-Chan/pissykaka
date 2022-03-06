@@ -20,6 +20,7 @@ class PostRepository
     private const UPDATED_AT = 'updated_at';
     private const ESTIMATE   = 'estimate';
     private const PASSWORD   = 'password';
+    private const IS_VERIFY  = 'is_verify';
 
     /** @var Medoo */
     private $db;
@@ -45,7 +46,6 @@ class PostRepository
         $replies = [];
 
         foreach ($replies_data as $reply_data) {
-            $reply_data = array_merge($reply_data, $this->getVerifyData($reply_data['poster']));
             $replies[] = Post::fromState($reply_data);
         }
 
@@ -82,7 +82,6 @@ class PostRepository
         $posts = [];
 
         foreach ($posts_data as $post_data) {
-            $post_data = array_merge($post_data, $this->getVerifyData($post_data['poster']));
             $posts[] = Post::fromState($post_data);
         }
 
@@ -97,15 +96,23 @@ class PostRepository
             throw new PostNotFound('Пост не найден');
         }
 
-        $post_data = array_merge($post_data, $this->getVerifyData($post_data['poster']));
-
         return Post::fromState($post_data);
     }
 
     public function save(Post $post): int
     {
+        $name = $this->db->get('passports', 'name', ['hash' => hash('sha512', $post->getPoster())]);
+
+        if ($name !== null) {
+            $is_verify = 'yes';
+            $poster = $name;
+        } else {
+            $is_verify = 'no';
+            $poster = $poster->getPoster();
+        }
+
         $this->db->insert(self::TABLE, [
-            self::POSTER => $post->getPoster(),
+            self::POSTER => $poster,
             self::SUBJECT => $post->getSubject(),
             self::MESSAGE => $post->getMessage(),
             self::TIMESTAMP => $post->getTimestamp(),
@@ -113,7 +120,8 @@ class PostRepository
             self::PARENT_ID => $post->getParentId(),
             self::UPDATED_AT => $post->getUpdatedAt(),
             self::ESTIMATE => $post->getEstimate(),
-            self::PASSWORD => $post->getPassword()
+            self::PASSWORD => $post->getPassword(),
+            self::IS_VERIFY => $is_verify
         ]);
 
         return $this->db->id();
@@ -129,7 +137,8 @@ class PostRepository
             self::BOARD_ID => $post->getBoardId(),
             self::PARENT_ID => $post->getParentId(),
             self::UPDATED_AT => $post->getUpdatedAt(),
-            self::ESTIMATE => $post->getEstimate()
+            self::ESTIMATE => $post->getEstimate(),
+            self::IS_VERIFY => $post->getIsVerify() == true ? 'yes' : 'no'
         ], [self::ID => $post->getId()]);
 
         return true;
@@ -164,26 +173,8 @@ class PostRepository
             self::PARENT_ID,
             self::UPDATED_AT,
             self::ESTIMATE,
-            self::PASSWORD
-        ];
-    }
-
-    private function getVerifyData(string $poster): array
-    {
-        $hash = hash('sha512', $poster);
-
-        $name = $this->db->get('passports', 'name', ['hash' => $hash]);
-
-        if ($name == null) {
-            return [
-                'poster'    => $poster,
-                'is_verify' => false
-            ];
-        }
-
-        return [
-            'poster' => $name,
-            'is_verify' => true
+            self::PASSWORD,
+            self::IS_VERIFY
         ];
     }
 }
