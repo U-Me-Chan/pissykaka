@@ -108,7 +108,7 @@ class PostRepository
             $poster = $name;
         } else {
             $is_verify = 'no';
-            $poster = $poster->getPoster();
+            $poster = $post->getPoster();
         }
 
         $this->db->insert(self::TABLE, [
