@@ -29,12 +29,6 @@ class PostCreator
                 return (new Response([], 400))->setException(new PostNotFound('Попытка ответа на несуществующий пост'));
             }
 
-            $replies_count = $this->post_repository->getRepliesCount($parent_post->getId());
-
-            if ($replies_count > 500) {
-                return (new Response([], 400))->setException(new \Exception('Превышен лимит количества ответов на пост (500 ответов). Создайте новый пост'));
-            }
-
             $message = $req->getParams('message') ? $req->getParams('message') : throw new \InvalidArgumentException("Нельзя создать пост без сообщения");
 
             $post = new Post(
@@ -50,7 +44,9 @@ class PostCreator
 
             $new_post_id = $this->post_repository->save($post);
 
-            if (!$req->getParams('sage')) {
+            $replies_count = $this->post_repository->getRepliesCount($parent_post->getId());
+
+            if (!$req->getParams('sage') || $replies_count <= 500) {
                 $parent_post->setUpdatedAt(time());
                 $this->post_repository->update($parent_post); // bump thread
 
