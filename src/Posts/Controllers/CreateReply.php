@@ -40,6 +40,12 @@ final class CreateReply
 
         $id = $this->storage->save($post);
 
+        if ($thread->replies_count < 500) {
+            $thread->updated_at = time();
+
+            $this->storage->save($thread);
+        }
+
         return new Response(['post_id' => $id, 'password' => $post->password], 201);
     }
 }
