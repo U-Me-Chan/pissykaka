@@ -40,7 +40,7 @@ final class CreateReply
 
         $id = $this->storage->save($post);
 
-        if ($thread->replies_count < 500) {
+        if ($thread->replies_count < 500 && !$req->getParams('sage')) {
             $thread->updated_at = time();
 
             $this->storage->save($thread);

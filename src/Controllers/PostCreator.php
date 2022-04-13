@@ -46,7 +46,7 @@ class PostCreator
 
             $replies_count = $this->post_repository->getRepliesCount($parent_post->getId());
 
-            if (!$req->getParams('sage') || $replies_count <= 500) {
+            if (!$req->getParams('sage') && $replies_count < 500) {
                 $parent_post->setUpdatedAt(time());
                 $this->post_repository->update($parent_post); // bump thread
 
