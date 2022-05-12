@@ -36,6 +36,10 @@ class BoardsFetcher
             $results['boards'][] = $board->toArray();
         }
 
+        $exclude_tags = $req->getParams('exclude_tags') ? $req->getParams('exclude_tags') : ['test', 'fap'];
+        $limit        = $req->getParams('limit') ? $req->getParams('limit') : 20;
+        $offset       = $req->getParams('offset') ? $req->getParams('offset') : 0;
+
         $results['posts'] = $this->db->select(
             'posts',
             [
@@ -53,8 +57,8 @@ class BoardsFetcher
                 'boards.tag'
             ],
             [
-                'AND' => ['boards.tag[!]' => ['test', 'fap']],
-                'LIMIT' => 20,
+                'AND' => ['boards.tag[!]' => $exclude_tags],
+                'LIMIT' => [$offset, $limit],
                 'ORDER' => ['posts.timestamp' => 'DESC']
             ]
         );
