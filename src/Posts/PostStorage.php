@@ -18,10 +18,11 @@ class PostStorage
     public function find(int $limit = 20, int $offset = 0, array $tags = []): array
     {
         $conditions = [
-            'LIMIT' => [$offset, $limit],
             'parent_id' => null,
             'ORDER' => ['updated_at' => 'DESC']
         ];
+
+        $limit = ['LIMIT' => [$offset, $limit]];
 
         $boards = [];
 
@@ -33,7 +34,7 @@ class PostStorage
 
         $conditions['board_id'] = array_keys($boards);
 
-        $post_datas = $this->db->select('posts', '*', $conditions);
+        $post_datas = $this->db->select('posts', '*', array_merge($conditions, $limit));
         $count      = $this->db->count('posts', $conditions);
 
         if ($post_datas == null) {
