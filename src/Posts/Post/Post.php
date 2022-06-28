@@ -55,6 +55,7 @@ class Post implements \JsonSerializable
 
         $data['media'] = $media;
         $data['truncated_message'] = $truncated_message;
+	$data['datetime'] =  date('Y-m-d H:m:s', $data['timestamp'] + 60 * (60 * 4));
 
         unset($data['password']);
 

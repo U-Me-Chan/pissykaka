@@ -15,7 +15,7 @@ class BoardStorage
     public function find(array $exclude_tags = []): array
     {
         $conditions = [
-            'ORDER' => ['name' => 'ASC']
+            'ORDER' => ['tag' => 'ASC']
         ];
 
         if (!empty($exclude_tags)) {
