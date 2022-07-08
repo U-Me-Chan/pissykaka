@@ -38,9 +38,11 @@ class Router
             $handler = $routeInfo[1];
             $vars = $routeInfo[2];
 
-            return call_user_func($handler, $req, $vars);
-        default:
-            return new Response([], 500);
+            try {
+                return call_user_func($handler, $req, $vars);
+            } catch (\Throwable $e) {
+                return (new Response([], 500))->setException($e);
+            }
         }
     }
 

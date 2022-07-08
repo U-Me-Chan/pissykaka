@@ -60,8 +60,6 @@ $r = $app['router'];
 $board_storage = new BoardStorage($app['db']);
 $post_storage = new PostStorage($app['db'], $board_storage);
 
-$c = function ($req) { return new Response();};
-
 $r->addRoute('GET', '/v2/board', new GetBoardList($board_storage));
 $r->addRoute('GET', '/v2/board/{tags:[a-z\+]+}', new GetThreadList($post_storage));
 

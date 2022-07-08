@@ -117,6 +117,8 @@ class PostStorage
         }
 
         $this->db->update('posts', $post_data, ['id' => $id]);
+
+        return $id;
     }
 
     public function delete(int $id): bool
