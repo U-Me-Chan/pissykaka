@@ -25,7 +25,7 @@ final class DeletePost
             return (new Response([], 401))->setException(new \InvalidArgumentException("Неверный мастер-ключ"));
         }
 
-        $reason = $req->getParams('reason') ? $req->getParams('reason') : 'Не указано';
+        $reason = $req->getHeaders('HTTP_REASON') ? $req->getHeaders('HTTP_REASON') : 'Не указано';
 
         $id = $vars['id'];
 
@@ -45,7 +45,7 @@ EOT;
 
             $this->storage->save($post);
 
-            return new Response([], 200);
+            return new Response([], 204);
         } catch (\OutOfBoundsException $e) {
             return (new Response([], 404))->setException(new \OutOfBoundsException("Нет такого поста"));
         }
